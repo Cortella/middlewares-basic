@@ -39,6 +39,7 @@ function checksTodoExists(request, response, next) {
   const { username } = request.headers;
   const id = request.params;
   
+  console.log("username: ",username, "\n id: ", id);
   const regexExpr = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
   const idIsValid = regexExpr.test(id);
@@ -61,6 +62,8 @@ function findUserById(request, response, next) {
   }
 
   request.user = user;
+
+  next();
 }
 
 app.post('/users', (request, response) => {
@@ -87,7 +90,7 @@ app.post('/users', (request, response) => {
 
 app.get('/users/:id', findUserById, (request, response) => {
   const { user } = request;
-
+  
   return response.json(user);
 });
 
