@@ -35,21 +35,24 @@ function checksCreateTodosUserAvailability(request, response, next) {
 }
 
 function checksTodoExists(request, response, next) {
-  const { username } = request.headers;
-  const id = request.params;
-  
-  console.log("username: ",username, "\n id: ", id);
-  const regexExpr = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+  const { username } = request.headers
+  const { id } = request.params
 
-  const idIsValid = regexExpr.test(id);
+  const idValid = validate(id)
+  if (!idValid) return response.status(400).json({ error: "Todo ID is invalid!"})
 
-  const user = users.find(user => username === user.username);
+  const userExists = users.find((user) => user.username === username)
+  if (!userExists) return response.status(404).json({ error: "User don't exist!"})
 
-  if(!user || !idIsValid){
-    return response.status(404).json({error: "user not found or id is not valid!"});
+  const todoExists = userExists.todos.find((todo) => todo.id === id)
+  if (!todoExists) return response.status(404).json({ error: "Todo don't exist!"})
+
+  if (todoExists && todoExists) {
+    request.user = userExists
+    request.todo = todoExists
   }
-  
-  next();
+
+  next()
 }
 
 function findUserById(request, response, next) {
@@ -58,7 +61,7 @@ function findUserById(request, response, next) {
   const user = users.find(user => id === user.id);
 
   if(!user){
-    return response.status(403).json({error: "user not found!"});
+    return response.status(404).json({error: "user not found!"});
   }
 
   request.user = user;
