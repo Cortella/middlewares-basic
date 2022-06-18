@@ -15,7 +15,7 @@ function checksExistsUserAccount(request, response, next) {
   const user = users.find(user => username === user.username);
 
   if(!user){
-    return response.status(403).json({error: "user not found!"});
+    return response.status(404).json({error: "user not found!"});
   }
   request.user = user;
 
@@ -25,14 +25,13 @@ function checksExistsUserAccount(request, response, next) {
 function checksCreateTodosUserAvailability(request, response, next) {
   const user = request.user;
 
-  const todosLenght = user.todos.length;
+  const todosLength = user.todos.length;
 
-  if(todosLenght >= 10 && !user.pro){
+  if(todosLength >= 10 && !user.pro){
     return response.status(403).json({error: "not permission"});
   }
 
   next();
-
 }
 
 function checksTodoExists(request, response, next) {
@@ -47,9 +46,10 @@ function checksTodoExists(request, response, next) {
   const user = users.find(user => username === user.username);
 
   if(!user || !idIsValid){
-    return response.status(403).json({error: "user not found or id is not valid!"});
+    return response.status(404).json({error: "user not found or id is not valid!"});
   }
   
+  next();
 }
 
 function findUserById(request, response, next) {
